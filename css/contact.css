@@ -74,6 +74,7 @@
     border: 1px solid var(--panel-border);
     border-radius: var(--radius);
     padding: 16px 18px;
+    box-shadow: var(--soft-shadow);
     transition: border-color .15s ease, transform .15s ease;
 }
 
@@ -217,12 +218,12 @@
 .form-group textarea {
     font: inherit;
     font-size: 14.5px;
-    background: var(--bg);
+    background: var(--input-surface);
     border: 1px solid var(--panel-border);
     border-radius: var(--radius);
     padding: 12px 14px;
     color: var(--ink);
-    transition: border-color .15s ease;
+    transition: background-color .22s ease, border-color .15s ease, color .22s ease;
 }
 
 .form-group input::placeholder,

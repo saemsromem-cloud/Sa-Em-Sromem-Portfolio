@@ -5,7 +5,7 @@
 (function () {
   "use strict";
 
-  /* ---- theme toggle (cyanotype / paper) ---- */
+  /* ---- theme toggle (light / dark) ---- */
   var root = document.documentElement;
   var toggle = document.querySelector(".theme-toggle");
   var stored = localStorage.getItem("theme");
@@ -52,6 +52,49 @@
         hamburger.setAttribute("aria-expanded", "false");
       });
     });
+  }
+
+  /* ---- homepage section navigation ---- */
+  var skillsSection = document.getElementById("skills");
+  var sectionLinks = document.querySelectorAll('.nav-links a[href*="#"]');
+
+  if (sectionLinks.length) {
+    function setSectionActive(link) {
+      document.querySelectorAll(".nav-links a").forEach(function (item) {
+        item.classList.remove("active");
+        item.removeAttribute("aria-current");
+      });
+
+      if (link) {
+        link.classList.add("active");
+        link.setAttribute("aria-current", "location");
+      }
+    }
+
+    sectionLinks.forEach(function (link) {
+      link.addEventListener("click", function () {
+        setSectionActive(link);
+      });
+    });
+
+    if (skillsSection) {
+      var skillsLink = Array.from(sectionLinks).find(function (link) {
+        return link.getAttribute("href").endsWith("#skills");
+      });
+
+      if (window.location.hash === "#skills") setSectionActive(skillsLink);
+
+      var sectionObserver = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) setSectionActive(skillsLink);
+          });
+        },
+        { threshold: 0.35, rootMargin: "-68px 0px -35% 0px" },
+      );
+
+      sectionObserver.observe(skillsSection);
+    }
   }
 
   /* ---- scroll reveal ---- */

@@ -3,6 +3,23 @@
    Sa Em Sromem Portfolio
    ========================================================================== */
 
+:root {
+    --color-primary: var(--blue);
+    --color-primary-light: var(--accent);
+    --color-bg: var(--bg);
+    --color-bg-alt: var(--bg-soft);
+    --color-surface: var(--panel);
+    --color-text: var(--ink);
+    --color-text-muted: var(--ink-muted);
+    --color-border: var(--panel-border);
+    --radius-full: 999px;
+    --radius-lg: 18px;
+    --radius-sm: 8px;
+    --shadow-sm: var(--soft-shadow);
+    --shadow-md: var(--card-shadow);
+    --shadow-lg: var(--card-shadow);
+    --transition-fast: 0.2s ease;
+}
 
 /* ==========================================================================
    1. HERO SECTION
@@ -69,15 +86,15 @@
 @keyframes pulse {
 
     0% {
-        box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.5);
+        box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-primary) 50%, transparent);
     }
 
     70% {
-        box-shadow: 0 0 0 8px rgba(37, 99, 235, 0);
+        box-shadow: 0 0 0 8px transparent;
     }
 
     100% {
-        box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
+        box-shadow: 0 0 0 0 transparent;
     }
 
 }
@@ -136,6 +153,7 @@
     gap: 10px;
 
     margin-bottom: 34px;
+    max-width: 540px;
 }
 
 .hero-tech-stack span {
@@ -158,6 +176,79 @@
     font-family: var(--font-mono);
 
     font-size: 0.82rem;
+}
+
+.home-about {
+    border-top: 1px solid var(--panel-border);
+}
+
+.home-about-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(320px, .95fr);
+    gap: 72px;
+    align-items: center;
+}
+
+.home-about .section-heading {
+    margin: 0;
+}
+
+.home-about .section-heading p {
+    margin-bottom: 14px;
+}
+
+.home-about .section-heading p:last-of-type {
+    margin-bottom: 20px;
+}
+
+.text-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--accent);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.text-link:hover {
+    color: var(--blue-strong);
+}
+
+.about-focus-list {
+    display: grid;
+    gap: 10px;
+}
+
+.about-focus-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 20px;
+    border: 1px solid var(--panel-border);
+    border-radius: var(--radius);
+    background: var(--panel);
+    box-shadow: var(--soft-shadow);
+}
+
+.focus-index {
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 12px;
+}
+
+.about-focus-item strong,
+.about-focus-item small {
+    display: block;
+}
+
+.about-focus-item strong {
+    margin-bottom: 2px;
+    font-size: 15px;
+}
+
+.about-focus-item small {
+    color: var(--color-text-muted);
+    font-size: 13px;
 }
 
 .hero-tech-stack i {
@@ -402,7 +493,7 @@
 }
 
 .code-orange {
-    color: #d97706;
+    color: var(--accent);
 }
 
 .caret {
@@ -714,7 +805,7 @@
     top: -30px;
     right: -10px;
 
-    color: rgba(37, 99, 235, 0.07);
+    color: color-mix(in srgb, var(--accent) 7%, transparent);
 
     font-family: var(--font-mono);
 
@@ -763,6 +854,45 @@
     color: var(--color-text-muted);
 }
 
+.resume-actions {
+    justify-content: center;
+    margin-bottom: 0;
+}
+
+.home-contact {
+    padding-top: 24px;
+}
+
+.home-contact-panel {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+    padding: 34px 38px;
+    border: 1px solid var(--panel-border);
+    border-radius: var(--radius);
+    background: var(--panel);
+    box-shadow: var(--card-shadow);
+}
+
+.home-contact-panel h2 {
+    margin: 4px 0 8px;
+    font-size: clamp(24px, 3vw, 32px);
+}
+
+.home-contact-panel p:last-child {
+    max-width: 560px;
+    color: var(--color-text-muted);
+}
+
+.home-contact-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
 
 /* ==========================================================================
    11. DARK MODE
@@ -799,7 +929,7 @@ body.dark-theme .modern-cta {
 }
 
 body.dark-theme .cta-decoration {
-    color: rgba(96, 165, 250, 0.08);
+    color: color-mix(in srgb, var(--accent) 8%, transparent);
 }
 
 
@@ -819,6 +949,11 @@ body.dark-theme .cta-decoration {
         max-width: 440px;
     }
 
+    .home-about-grid {
+        grid-template-columns: 1fr;
+        gap: 36px;
+    }
+
 }
 
 
@@ -834,6 +969,16 @@ body.dark-theme .cta-decoration {
 
     .modern-cta {
         padding: 44px 24px;
+    }
+
+    .home-contact-panel {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 28px 24px;
+    }
+
+    .home-contact-actions {
+        justify-content: flex-start;
     }
 
 }

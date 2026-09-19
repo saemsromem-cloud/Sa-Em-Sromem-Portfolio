@@ -37,11 +37,22 @@
 .project-card {
   padding: 0;
   overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(300px, .95fr);
+  align-items: stretch;
+}
+
+.project-card:nth-child(even) .project-image {
+  order: 2;
+}
+
+.project-card:nth-child(even) .project-body {
+  order: 1;
 }
 
 .project-image {
   position: relative;
-  aspect-ratio: 16/10;
+  min-height: 100%;
   overflow: hidden;
   background: var(--bg-soft);
 }
@@ -60,7 +71,7 @@
 .project-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(0deg, rgba(13, 40, 57, .82), transparent 60%);
+  background: linear-gradient(0deg, color-mix(in srgb, var(--bg) 86%, transparent), transparent 60%);
   display: flex;
   align-items: flex-end;
   padding: 16px;
@@ -73,7 +84,7 @@
 }
 
 .project-overlay span {
-  color: #fff;
+  color: var(--ink);
   font-family: var(--font-mono);
   font-size: 12.5px;
   display: flex;
@@ -83,6 +94,9 @@
 
 .project-body {
   padding: 26px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .project-meta {
@@ -133,6 +147,48 @@
   color: var(--ink-muted);
 }
 
+.project-features {
+  display: grid;
+  gap: 7px;
+  margin: 0 0 20px;
+  padding: 0;
+  color: var(--ink-muted);
+  font-size: 13px;
+}
+
+.project-features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.project-features li::before {
+  content: "\\2713";
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.project-card > .project-body > .btn,
+.project-card > .project-body > .project-actions {
+  align-self: flex-start;
+}
+
+@media (max-width: 900px) {
+  .project-card {
+    display: block;
+  }
+
+  .project-card:nth-child(even) .project-image,
+  .project-card:nth-child(even) .project-body {
+    order: initial;
+  }
+
+  .project-image {
+    aspect-ratio: 16 / 10;
+    min-height: 0;
+  }
+}
+
 .project-actions .btn {
   width: 100%;
   justify-content: center;
@@ -147,6 +203,8 @@
   border: 1px dashed var(--panel-border);
   border-radius: var(--radius);
   padding: 26px 30px;
+  background: var(--bg-soft);
+  box-shadow: var(--soft-shadow);
 }
 
 .projects-note-icon {
@@ -226,6 +284,7 @@
   align-items: center;
   gap: 28px;
   padding: 40px;
+  box-shadow: var(--card-shadow);
 }
 
 .projects-cta-icon {
