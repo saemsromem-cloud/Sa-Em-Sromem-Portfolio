@@ -6,7 +6,7 @@ Output: app/static/resume/Sa-Em-Sromem-Resume.pdf
 
 import sys
 from pathlib import Path
-
+from reportlab.platypus import Flowable
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_LEFT
 from reportlab.lib.pagesizes import A4
@@ -87,23 +87,23 @@ S = {
         fontSize=10.3,
         leading=13,
         textColor=INK,
-        spaceBefore=9,
-        spaceAfter=4,
+        spaceBefore=4,
+        spaceAfter=2,
     ),
-    "body": style("body", fontSize=9.15, leading=12.8),
+    "body": style("body", fontSize=8.6, leading=11.8),
     "project": style(
         "project",
         fontName="Body-Bold",
         fontSize=10,
         leading=12.8,
-        spaceBefore=6,
-        spaceAfter=1.5,
+        spaceBefore=2,
+        spaceAfter=0.5,
     ),
-    "meta": style("meta", fontSize=8.2, leading=10.6, textColor=MUTED, spaceAfter=1.4),
+    "meta": style("meta", fontSize=7.8, leading=10, textColor=MUTED, spaceAfter=1),
     "bullet": style(
         "bullet",
-        fontSize=8.8,
-        leading=12,
+        fontSize=8.4,
+        leading=11,
         leftIndent=10,
         bulletIndent=0,
         spaceAfter=1,
@@ -137,7 +137,7 @@ S = {
     "side_label": style(
         "side_label",
         fontName="Body-Bold",
-        fontSize=7.2,
+        fontSize=7.6,
         leading=9,
         textColor=ACCENT,
         spaceBefore=4,
@@ -191,7 +191,7 @@ def project_block(project: dict) -> list:
         if url:
             visible_url = url.replace("https://", "").replace("http://", "").rstrip("/")
             links.append(
-                f'<link href="{esc(url)}" color="{ACCENT.hexval()}">'
+                f'<link href="{esc(url)}" color="#2c5a8c">'
                 f'{label}: {esc(visible_url)}</link>'
             )
     if links:
@@ -228,58 +228,52 @@ def draw_page(canvas, _doc) -> None:
 
 
 def sidebar_story(profile: dict) -> list:
-    github = profile["github"].replace("https://", "").rstrip("/")
-    linkedin = profile["linkedin"].replace("https://www.", "").rstrip("/")
+    def short(url: str) -> str:
+        return url.replace("https://www.", "").replace("https://", "").rstrip("/")
+
     link_color = ACCENT.hexval()
+
+    def link(url: str, text: str) -> Paragraph:
+        return Paragraph(f'<link href="{esc(url)}" color="{link_color}">{esc(text)}</link>', S["side_body"])
+
     items = section_heading("Contact", sidebar=True)
     items.extend(
         [
             Paragraph(esc(profile["phone"]), S["side_body"]),
-            Paragraph(
-                f'<link href="mailto:{esc(profile["email"])}" color="{link_color}">'
-                f'{esc(profile["email"])}</link>',
-                S["side_body"],
-            ),
+            link(f"mailto:{profile['email']}", profile["email"]),
+            link(profile["github"], short(profile["github"])),
+            link(profile["linkedin"], short(profile["linkedin"])),
+            link(profile["telegram"], f"Telegram {profile['telegram_handle']}"),
             Paragraph(esc(profile["location"]), S["side_body"]),
-            Paragraph(
-                f'<link href="{esc(profile["github"])}" color="{link_color}">'
-                f'{esc(github)}</link>',
-                S["side_body"],
-            ),
-            Paragraph(
-                f'<link href="{esc(profile["linkedin"])}" color="{link_color}">'
-                f'{esc(linkedin)}</link>',
-                S["side_body"],
-            ),
-            Spacer(1, 3 * mm),
+            Spacer(1, 2 * mm),
+        ]
+    )
+
+    education = content.EDUCATION
+    items.extend(section_heading("Education", sidebar=True))
+    items.extend(
+        [
+            Paragraph(f'<font name="Body-Bold">{esc(education["school"])}</font>', S["side_body"]),
+            Paragraph(esc(education["program"]), S["side_body"]),
+            Paragraph(esc(education["level"]), S["side_body"]),
+            Paragraph(f'Expected graduation: {esc(education["expected_graduation"])}', S["side_body"]),
+            Spacer(1, 2 * mm),
         ]
     )
 
     items.extend(section_heading("Technical skills", sidebar=True))
-    for label, group_name in [
-        ("Backend", "backend development"),
-        ("Frontend", "frontend fundamentals"),
-        ("Tools & Deployment", "tools and deployment"),
-    ]:
-        group = next(group for group in content.SKILLS if group["group"].lower() == group_name)
-        values = [
-            f"{name} (currently learning)" if level == "Learning" else name
-            for name, level in group["items"]
-        ]
-        if label == "Tools & Deployment":
-            web_tools = next(group for group in content.SKILLS if group["group"] == "Web tools")
-            values.extend(name for name, _level in web_tools["items"])
-        items.append(Paragraph(esc(label.upper()), S["side_label"]))
+    for group in content.SKILLS:
+        items.append(Paragraph(esc(group["group"]), S["side_label"]))
         items.extend(
             Paragraph(
-                esc(value),
+                esc(f"{name} (learning)" if level == "Learning" else name),
                 S["side_bullet"],
                 bulletText="\u2022",
             )
-            for value in values
+            for name, level in group["items"]
         )
 
-    items.append(Spacer(1, 64 * mm))
+    items.append(Spacer(1, 3 * mm))
     items.extend(section_heading("Languages", sidebar=True))
     items.extend(
         Paragraph(f"{esc(language)}: {esc(level)}", S["side_body"])
@@ -295,29 +289,22 @@ def main_story(profile: dict) -> list:
             S["name"],
         ),
         Paragraph(esc(profile["title"].upper()), S["title"]),
-        Spacer(1, 5 * mm),
+        Spacer(1, 3 * mm),
         HRFlowable(width="100%", thickness=1.1, color=colors.HexColor("#356a78"), spaceAfter=2),
     ]
     story.extend(section_heading("Professional summary"))
     story.append(Paragraph(esc(content.SUMMARY), S["body"]))
 
     projects = [project_block(project) for project in content.PROJECTS]
-    story.append(KeepTogether(section_heading("Projects") + projects[0] + [Spacer(1, 1.5 * mm)]))
-    story.extend(KeepTogether(block + [Spacer(1, 1.5 * mm)]) for block in projects[1:])
+    story.append(KeepTogether(section_heading("Projects") + projects[0] + [Spacer(1, 0.8 * mm)]))
+    story.extend(KeepTogether(block + [Spacer(1, 0.8 * mm)]) for block in projects[1:])
 
-    story.extend(section_heading("Education"))
-    education = content.EDUCATION
+    story.extend(section_heading("Relevant learning experience"))
     story.extend(
-        [
-            Paragraph(esc(education["school"]), S["project"]),
-            Paragraph(
-                f'{esc(education["program"])}'
-                f' | {esc(education["level"])}'
-                f' | Expected graduation: {esc(education["expected_graduation"])}',
-                S["meta"],
-            ),
-        ]
+        Paragraph(esc(item), S["bullet"], bulletText="\u2022") for item in content.LEARNING_EXPERIENCE
     )
+    story.extend(section_heading("Technical background"))
+    story.append(Paragraph(esc(content.TECHNICAL_BACKGROUND), S["body"]))
     return story
 
 
@@ -351,8 +338,8 @@ def build() -> Path:
         PAGE_HEIGHT - 16 * mm,
         leftPadding=0,
         rightPadding=0,
-        topPadding=12 * mm,
-        bottomPadding=8 * mm,
+        topPadding=8 * mm,
+        bottomPadding=3 * mm,
         id="main",
     )
     continuation_frame = Frame(
@@ -373,13 +360,8 @@ def build() -> Path:
         ]
     )
 
-    story = [NextPageTemplate("continuation")]
-    story.extend(sidebar_story(profile))
-    story.append(FrameBreak())
-    story.extend(main_story(profile))
-    doc.build(story)
+    story: list[Flowable] = [NextPageTemplate("...")]
     return OUTPUT
-
 
 if __name__ == "__main__":
     print(f"Wrote {build()}")

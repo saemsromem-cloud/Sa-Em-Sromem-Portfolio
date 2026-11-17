@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% from "_components.html" import page_header with context %}
+{% block title %}Contact | {{ p.name }}{% endblock %}
+{% block description %}Contact {{ p.name }} about a Backend Developer internship or a project. Send a message, or reach out by email, GitHub, LinkedIn or Telegram.{% endblock %}
+{% block scripts %}<script src="{{ static_url('js/contact.js') }}" defer></script>{% endblock %}
+
+{% block content %}
+{{ page_header("Contact", "Interested in working together or discussing an internship opportunity? Send me a message and I will reply by email.") }}
+
+<section class="section">
+  <div class="container contact-grid">
+    <div class="contact-details">
+      <h2>Reach me directly</h2>
+      <ul class="contact-list">
+        <li><a href="mailto:{{ p.email }}">{{ icon("mail") }} <span>{{ p.email }}</span></a></li>
+        <li><a href="{{ p.github }}" target="_blank" rel="noopener noreferrer">{{ icon("github") }} <span>github.com/{{ p.github_handle }}</span></a></li>
+        <li><a href="{{ p.linkedin }}" target="_blank" rel="noopener noreferrer">{{ icon("linkedin") }} <span>LinkedIn profile</span></a></li>
+        <li><a href="{{ p.telegram }}" target="_blank" rel="noopener noreferrer">{{ icon("send") }} <span>Telegram {{ p.telegram_handle }}</span></a></li>
+        <li><span class="contact-static">{{ icon("pin") }} <span>{{ p.location }}</span></span></li>
+      </ul>
+      <p class="contact-resume"><a class="section-link" href="{{ url_for('public.resume') }}">View my resume</a></p>
+    </div>
+
+    <form class="contact-form" method="post" action="{{ url_for('public.contact') }}" novalidate data-contact-form>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      {# Honeypot: hidden from people, so only bots fill it in. #}
+      <div class="hp" aria-hidden="true">
+        <label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+      </div>
+
+      <div class="form-heading">
+        <h2>Send a message</h2>
+        <span>All fields are required.</span>
+      </div>
+
+      <div id="form-status" class="form-status" tabindex="-1">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, text in messages %}
+        <p class="notice notice-{{ category }}" role="{{ 'status' if category == 'success' else 'alert' }}">{{ text }}</p>
+        {% endfor %}
+        {% endwith %}
+        {% if errors %}
+        <div class="notice notice-error" role="alert">
+          <p><strong>Your message was not sent.</strong> Please fix the following:</p>
+          <ul>{% for error in errors %}<li>{{ error }}</li>{% endfor %}</ul>
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="contact-name">Name</label>
+          <input id="contact-name" type="text" name="name" value="{{ form.name or '' }}" autocomplete="name" maxlength="100" minlength="2" required>
+        </div>
+        <div class="field">
+          <label for="contact-email">Email</label>
+          <input id="contact-email" type="email" name="email" value="{{ form.email or '' }}" autocomplete="email" maxlength="254" required>
+        </div>
+      </div>
+      <div class="field">
+        <label for="contact-subject">Subject</label>
+        <input id="contact-subject" type="text" name="subject" value="{{ form.subject or '' }}" maxlength="150" minlength="3" required>
+      </div>
+      <div class="field">
+        <label for="contact-message">Message</label>
+        <textarea id="contact-message" name="message" rows="6" maxlength="3000" minlength="10" required>{{ form.message or '' }}</textarea>
+        <p class="field-hint"><span data-count>0</span> of 3000 characters</p>
+      </div>
+      <button class="btn btn-primary" type="submit">Send message</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Resume | {{ p.name }}{% endblock %}
+{% block description %}Resume of {{ p.name }}, {{ p.title }}: education, projects, technical skills and learning experience. Download it as a PDF or print it.{% endblock %}
+{% block head_extra %}<link rel="stylesheet" href="{{ static_url('css/resume.css') }}">{% endblock %}
+{% block scripts %}<script src="{{ static_url('js/resume.js') }}" defer></script>{% endblock %}
+
+{% macro short_url(url) -%}{{ url | replace("https://www.", "") | replace("https://", "") | replace("http://", "") | trim("/") }}{%- endmacro %}
+
+{% block content %}
+<section class="page-header resume-header">
+  <div class="container resume-toolbar">
+    <div>
+      <h1>Resume</h1>
+      <p class="page-lead">A one-page summary for internship applications. Download the PDF, or print this page.</p>
+    </div>
+    <div class="button-row">
+      <a class="btn btn-primary" href="{{ url_for('public.resume_download') }}">{{ icon("download") }} Download PDF</a>
+      <button class="btn btn-secondary" type="button" data-print>{{ icon("printer") }} Print resume</button>
+    </div>
+  </div>
+  <noscript><div class="container"><p class="muted">Printing needs JavaScript. You can also press Ctrl+P (Cmd+P on a Mac).</p></div></noscript>
+</section>
+
+<section class="resume-stage" aria-label="Resume preview">
+  <div class="container">
+    <article class="cv" aria-label="Resume of {{ p.name }}">
+      <aside class="cv-side">
+        <img class="cv-photo" src="{{ static_url('images/profile.jpg') }}" width="320" height="320" alt="Portrait of {{ p.name }}">
+
+        <section class="cv-block">
+          <h2>Contact</h2>
+          <ul class="cv-contact">
+            <li><a href="mailto:{{ p.email }}">{{ p.email }}</a></li>
+            <li><a href="{{ p.github }}">{{ short_url(p.github) }}</a></li>
+            <li><a href="{{ p.linkedin }}">{{ short_url(p.linkedin) }}</a></li>
+            <li><a href="{{ p.telegram }}">Telegram {{ p.telegram_handle }}</a></li>
+            <li>{{ p.location }}</li>
+          </ul>
+        </section>
+
+        <section class="cv-block">
+          <h2>Education</h2>
+          <p class="cv-strong">{{ c.EDUCATION.school }}</p>
+          <p>{{ c.EDUCATION.program }}</p>
+          <p>{{ c.EDUCATION.level }}</p>
+          <p>Expected graduation: {{ c.EDUCATION.expected_graduation }}</p>
+        </section>
+
+        <section class="cv-block">
+          <h2>Technical skills</h2>
+          {% for group in c.SKILLS %}
+          <h3>{{ group.group }}</h3>
+          <ul class="cv-list">
+            {% for name, level in group["items"] %}<li>{{ name }}{% if level == "Learning" %} (learning){% endif %}</li>{% endfor %}
+          </ul>
+          {% endfor %}
+        </section>
+
+        <section class="cv-block">
+          <h2>Languages</h2>
+          <ul class="cv-plain">
+            {% for language, level in c.LANGUAGES %}<li>{{ language }}: {{ level }}</li>{% endfor %}
+          </ul>
+        </section>
+      </aside>
+
+      <div class="cv-main">
+        <header class="cv-head">
+          <h2 class="cv-name">{{ p.name }}</h2>
+          <p class="cv-title">{{ p.title }}</p>
+        </header>
+
+        <section class="cv-section">
+          <h3>Professional summary</h3>
+          <p>{{ c.SUMMARY }}</p>
+        </section>
+
+        <section class="cv-section">
+          <h3>Projects</h3>
+          {% for project in c.PROJECTS %}
+          <div class="cv-project">
+            <h4>{{ project.name }}</h4>
+            <p class="cv-meta"><strong>{{ project.kind }}</strong> | {{ project.tech | join(", ") }}</p>
+            <ul>
+              {% for bullet in project.resume_bullets %}<li>{{ bullet }}</li>{% endfor %}
+            </ul>
+            {% if project.repo or project.demo %}
+            <p class="cv-meta cv-links">
+              {% if project.repo %}Repository: {{ short_url(project.repo) }}{% endif %}{% if project.repo and project.demo %} | {% endif %}{% if project.demo %}Live demo: {{ short_url(project.demo) }}{% endif %}
+            </p>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </section>
+
+        <section class="cv-section">
+          <h3>Relevant learning experience</h3>
+          <ul class="cv-bullets">
+            {% for item in c.LEARNING_EXPERIENCE %}<li>{{ item }}</li>{% endfor %}
+          </ul>
+        </section>
+
+        <section class="cv-section">
+          <h3>Technical background</h3>
+          <p>{{ c.TECHNICAL_BACKGROUND }}</p>
+        </section>
+      </div>
+    </article>
+  </div>
+</section>
+{% endblock %}

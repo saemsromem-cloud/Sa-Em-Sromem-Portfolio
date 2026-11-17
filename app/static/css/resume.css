@@ -1,0 +1,81 @@
+/* Resume page: an A4 sheet on screen, the same sheet when printed.
+   Colors are fixed (not theme variables) because this is a paper document. */
+
+.resume-toolbar { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 1.25rem 2rem; }
+.resume-toolbar .button-row { margin-top: 0; }
+.resume-stage { padding: 2.5rem 0 4rem; background: var(--tint); }
+
+.cv {
+  --cv-navy: #12283f;
+  --cv-ink: #1a2633;
+  --cv-muted: #52606f;
+  --cv-rule: #cfd8e1;
+  --cv-accent: #8fb8e8;
+  display: grid;
+  grid-template-columns: 70mm 1fr;
+  width: 210mm;
+  min-height: 297mm;
+  margin: 0 auto;
+  background: linear-gradient(to right, var(--cv-navy) 0 70mm, #fff 70mm);
+  box-shadow: 0 10px 40px rgb(14 34 55 / 18%);
+  color: var(--cv-ink);
+  font-size: 9pt;
+  line-height: 1.45;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+.cv a { color: inherit; text-decoration: none; }
+.cv p { margin: 0 0 .25em; }
+.cv ul { margin: 0; padding: 0; list-style: none; }
+.cv h2, .cv h3, .cv h4 { font-family: var(--font); letter-spacing: 0; }
+
+/* Left column */
+.cv-side { padding: 11mm 7mm 9mm; color: #eaf0f6; }
+.cv-photo { width: 34mm; height: 34mm; margin: 0 auto 8mm; border: 1.2px solid #fff; border-radius: 50%; object-fit: cover; }
+.cv-block { margin-bottom: 6mm; }
+.cv-block h2 { margin: 0 0 2mm; padding-bottom: 1.2mm; border-bottom: 1px solid rgb(255 255 255 / 35%); color: #fff; font-size: 9.5pt; font-weight: 600; }
+.cv-block h3 { margin: 2.5mm 0 .8mm; color: var(--cv-accent); font-size: 8pt; font-weight: 600; }
+.cv-block p, .cv-contact li, .cv-plain li { font-size: 8.4pt; overflow-wrap: anywhere; }
+.cv-contact li { margin-bottom: 1.4mm; }
+.cv-strong { font-weight: 600; }
+.cv-list li { position: relative; padding-left: 3mm; font-size: 8.4pt; }
+.cv-list li::before { position: absolute; left: 0; content: "\2022"; }
+
+/* Right column */
+.cv-main { padding: 12mm 10mm 9mm 9mm; }
+.cv-head { margin-bottom: 5mm; padding-bottom: 4mm; border-bottom: 1.5px solid var(--cv-navy); }
+.cv-name { margin: 0; font-family: var(--font-serif); font-size: 26pt; font-weight: 600; line-height: 1.1; letter-spacing: -.01em; }
+.cv-title { margin: 1.5mm 0 0; color: #2c5a8c; font-size: 10.5pt; font-weight: 600; }
+.cv-section { margin-bottom: 4.5mm; }
+.cv-section > h3 { margin: 0 0 2mm; padding-bottom: 1mm; border-bottom: 1px solid var(--cv-rule); font-size: 10pt; font-weight: 600; }
+.cv-project { margin-bottom: 3mm; break-inside: avoid; }
+.cv-project h4 { margin: 0; font-size: 9.6pt; font-weight: 600; }
+.cv-meta { color: var(--cv-muted); font-size: 8pt; }
+.cv-project ul, .cv-bullets { display: grid; gap: .6mm; margin-top: .8mm; }
+.cv-project li, .cv-bullets li { position: relative; padding-left: 3.2mm; }
+.cv-project li::before, .cv-bullets li::before { position: absolute; left: 0; content: "\2022"; }
+.cv-links { margin-top: .8mm; overflow-wrap: anywhere; }
+
+/* Narrow screens: stack the two columns instead of scaling a tiny page. */
+@media screen and (max-width: 860px) {
+  .resume-stage { padding: 1.5rem 0 3rem; }
+  .cv { grid-template-columns: 1fr; width: 100%; min-height: 0; background: #fff; font-size: 10pt; }
+  .cv-side { background: var(--cv-navy); padding: 1.5rem 1.25rem; }
+  .cv-main { padding: 1.5rem 1.25rem; }
+  .cv-name { font-size: 22pt; }
+}
+
+/* Printing: only the sheet, on A4, with no site navigation or buttons. */
+@page { size: A4; margin: 0; }
+@media print {
+  .cv-main { padding-top: 8mm; padding-bottom: 4mm; }
+  .cv-meta { font-size: 7.6pt; }
+  .cv-section { margin-bottom: 3.5mm; }
+  .cv-head { margin-bottom: 4mm; padding-bottom: 3mm; }
+  .cv-project { margin-bottom: 2.4mm; }
+  html, body { background: #fff !important; }
+  .site-header, .site-footer, .skip-link, .resume-header { display: none !important; }
+  .resume-stage { padding: 0; background: #fff; }
+  .resume-stage .container { width: auto; margin: 0; }
+  .cv { font-size: 8.3pt; line-height: 1.38; min-height: 296mm; box-shadow: none; margin: 0; width: 210mm; grid-template-columns: 70mm 1fr; background: linear-gradient(to right, var(--cv-navy) 0 70mm, #fff 70mm); }
+}

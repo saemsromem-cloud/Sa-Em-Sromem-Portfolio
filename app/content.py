@@ -1,20 +1,23 @@
 """Portfolio content: the single source of truth.
 
-The web page (templates/index.html) and the resume PDF
-(scripts/build_resume.py) both read from this file, so facts only need
-to be corrected in one place.
+The website pages (templates/), the HTML resume page and the resume PDF
+(scripts/build_resume.py) all read from this file, so a fact only needs to be
+corrected in one place.
 
-Rule for editing: only add things that are true. Anything marked
-TODO is waiting on information that is not in the project yet.
+Rule for editing: only add things that are true. Anything set to None is
+waiting on information that is not in the project yet, and the templates hide
+it instead of showing an empty placeholder.
 """
 
 PROFILE = {
     "name": "Sa Em Sromem",
+    "initials": "SE",
     "title": "Aspiring Backend Developer",
     "location": "Phnom Penh, Cambodia",
     "email": "saemsromem@gmail.com",
-    "phone": "071 9335 708",  # Shown on the PDF resume only, not on the website.
+    "phone": "068 795 467",  # Shown on the PDF resume only, not on the website.
     "github": "https://github.com/saemsromem-cloud",
+    "github_handle": "saemsromem-cloud",
     "linkedin": "https://www.linkedin.com/in/sa-em-sromem-65ab73428/",
     "telegram": "https://t.me/Em_Programming",
     "telegram_handle": "@Em_Programming",
@@ -35,6 +38,8 @@ SUMMARY = (
     "internship in 2027 to contribute to a development team and keep learning."
 )
 
+# ---------------------------------------------------------------- About page
+
 ABOUT = [
     "I study Web Programming at Passerelles numériques Cambodia (PNC) and "
     "expect to graduate in 2027. My goal is to become a backend developer.",
@@ -46,11 +51,50 @@ ABOUT = [
     "the server side: Python, Flask, SQL and, next, REST APIs.",
 ]
 
-# level: "Working" = used in real projects; "Foundational" = used, still building confidence;
-# "Learning" = actively studying, not yet used in a finished project.
+APPROACH = [
+    (
+        "Break the problem into steps",
+        "Before I write code I describe what the program has to do in small "
+        "steps, for example: check the input, store it, then return a result.",
+    ),
+    (
+        "Learn by building",
+        "I practise a topic by using it in a project. This portfolio started as "
+        "static pages and grew into a Flask application with a database and an "
+        "admin dashboard.",
+    ),
+    (
+        "Work with other people",
+        "On team projects I plan tasks with teammates and share code through "
+        "Git and GitHub.",
+    ),
+]
+
+GOAL = (
+    "I am looking for a Backend Developer internship in 2027 where I can "
+    "contribute to a development team, learn from experienced developers and "
+    "keep improving my Python, Flask and database skills."
+)
+
+# ---------------------------------------------------------------- Skills page
+# level: "Working" = used in real projects; "Foundational" = used, still building
+# confidence; "Learning" = actively studying, not yet used in a finished project.
+
+SKILL_LEVELS = {
+    "Working": "Used in projects",
+    "Foundational": "Foundational",
+    "Learning": "Learning",
+}
+
+SKILL_LEVEL_HELP = {
+    "Working": "I have used it in projects and can work with it day to day.",
+    "Foundational": "I have used it and understand the basics, and I am still building confidence.",
+    "Learning": "I am studying it now and have not used it in a finished project yet.",
+}
+
 SKILLS = [
     {
-        "group": "Backend development",
+        "group": "Backend",
         "items": [
             ("Python", "Working"),
             ("Flask", "Working"),
@@ -60,7 +104,7 @@ SKILLS = [
         ],
     },
     {
-        "group": "Frontend fundamentals",
+        "group": "Frontend",
         "items": [
             ("HTML", "Working"),
             ("CSS", "Working"),
@@ -77,19 +121,27 @@ SKILLS = [
             ("AWS EC2", "Foundational"),
             ("Vercel", "Working"),
             ("Netlify", "Working"),
-            ("VS Code", "Working"),
+            ("Google Search Console", "Foundational"),
         ],
-    },
-    {
-        "group": "Web tools",
-        "items": [("Google Search Console", "Foundational")],
     },
 ]
 
+# Skills shown on the home page.
+FEATURED_SKILLS = ["Python", "Flask", "SQL", "MySQL", "HTML", "CSS", "JavaScript", "Git", "GitHub"]
+
+# A project's "tech" entry counts as use of these skills.
+SKILL_ALIASES = {"SQL": ["SQL", "SQLite"]}
+
+# ------------------------------------------------------------------ Projects
+# "image" is a screenshot in static/images. Projects without one get a
+# designed text cover instead of a broken or invented picture.
+
 PROJECTS = [
     {
-        "name": "This Portfolio \u2013 Flask Backend",
+        "slug": "portfolio-website",
+        "name": "Personal Portfolio Website",
         "kind": "Backend project",
+        "featured": True,
         "summary": (
             "The site you are viewing is a Flask application. Visitors can send "
             "a message through the contact form, and I read and manage those "
@@ -113,12 +165,15 @@ PROJECTS = [
         ],
         "tech": ["Python", "Flask", "SQLite", "Jinja2", "HTML", "CSS", "JavaScript"],
         "image": None,
-        "repo": None,  # TODO: add the GitHub repository URL for this portfolio.
+        "image_alt": None,
+        "repo": "https://github.com/saemsromem-cloud/Portfolio-Sa-Em-Sromem",
         "demo": None,
     },
     {
+        "slug": "it-awareness-club",
         "name": "IT Awareness Club",
-        "kind": "Frontend project and Backend academic team project",
+        "kind": "Academic team project",
+        "featured": True,
         "summary": (
             "A website that shares IT news, activities, events and resources "
             "for students in one place."
@@ -129,36 +184,53 @@ PROJECTS = [
             "Reusable UI structure",
         ],
         "contribution": "Built the pages and layout with HTML, CSS and JavaScript.",
-        "tech": ["HTML", "CSS", "JavaScript"],
+        "resume_bullets": [
+            "Built the pages and layout of a website that shares IT news, activities, events and resources for students.",
+            "Used HTML, CSS and JavaScript to create a responsive page layout.",
+        ],
+        "tech": ["HTML", "CSS", "JavaScript", "Vercel"],
         "image": "images/it-awareness-club.webp",
-        "image_alt": "Screenshot of the IT Awareness Club website",
+        "image_alt": "Screenshot of the IT Awareness Club website home page",
         "repo": "https://github.com/mut-soriya/it-awareness-club-project",
         "demo": "https://it-awareness-club-project.vercel.app/",
     },
     {
+        "slug": "internship-career-guide",
         "name": "Internship and Career Guide",
         "kind": "Academic team project",
+        "featured": True,
         "summary": (
             "A website that gives students guidance on internships and careers."
         ),
         "features": [
             "Responsive layout with reusable components",
-            "Planned tasks and shared code with teammates through Git and GitHub",
+            "Clean, accessible interface with consistent typography and color",
+            "Tasks planned and code shared with teammates through Git and GitHub",
         ],
-        "contribution": None,  # TODO: say what you personally built.
-        "tech": ["HTML", "CSS", "Tailwind CSS", "JavaScript"],
-        "image": None,
+        "contribution": (
+            "Worked with teammates to plan tasks and build website features, "
+            "and used Git and GitHub for version control and collaboration."
+        ),
+        "resume_bullets": [
+            "Worked in a team to build a website that gives students guidance on internships and careers.",
+            "Applied responsive design and reusable components; used Git and GitHub to collaborate.",
+        ],
+        "tech": ["HTML", "CSS", "Tailwind CSS", "JavaScript", "Git", "GitHub", "Vercel"],
+        "image": "images/career-guide.webp",
+        "image_alt": "Screenshot of the Internship and Career Guide website home page",
         "repo": "https://github.com/Group-WEP-Design-Project/Career_Guide_Website",
         "demo": "https://kamserksa.vercel.app/index.html",
     },
 ]
 
+# ----------------------------------------------------------------- Education
+
 EDUCATION = {
     "school": "Passerelles numériques Cambodia (PNC)",
+    "short_school": "PNC",
     "program": "Web Programming",
-    "years": "2026 to 2027 (expected graduation)",
-    "expected_graduation": "2027",
-    "level": "First-year student",
+    "years": "2026 to present",
+    "level": "second-year student",
     "topics": "Programming fundamentals, web development, databases, Linux and Git.",
 }
 
@@ -177,4 +249,59 @@ LEARNING = {
     ],
 }
 
+# Used by the resume page and the resume PDF.
+LEARNING_EXPERIENCE = [
+    "Built individual and team web projects as part of the Web Programming program at PNC.",
+    "Used Git and GitHub to manage source code and work with teammates.",
+    "Practised relational databases with MySQL, and worked with Linux / Ubuntu and basic cloud environments.",
+    "Took part in team planning, discussions and presentations.",
+]
+
+TECHNICAL_BACKGROUND = (
+    "Server side: Python and Flask applications with routes, form validation, CSRF protection "
+    "and environment-based configuration, using SQLite and MySQL databases. "
+    "Front end: responsive HTML, CSS and JavaScript, and Tailwind CSS. "
+    "Tools: Git and GitHub, Linux / Ubuntu, AWS EC2, and hosting on Vercel and Netlify. "
+    "Currently learning REST API design."
+)
+
 LANGUAGES = [("Khmer", "Native"), ("English", "Working proficiency")]
+
+
+# ------------------------------------------------------------------- Helpers
+
+
+def get_project(slug: str) -> dict | None:
+    return next((project for project in PROJECTS if project["slug"] == slug), None)
+
+
+def neighbour_projects(slug: str) -> tuple[dict | None, dict | None]:
+    """Return the previous and next project, for the detail page links."""
+    index = next((i for i, project in enumerate(PROJECTS) if project["slug"] == slug), None)
+    if index is None:
+        return None, None
+    previous = PROJECTS[index - 1] if index > 0 else None
+    following = PROJECTS[index + 1] if index < len(PROJECTS) - 1 else None
+    return previous, following
+
+
+def featured_projects() -> list[dict]:
+    return [project for project in PROJECTS if project["featured"]]
+
+
+def skill_level(name: str) -> str | None:
+    for group in SKILLS:
+        for skill, level in group["items"]:
+            if skill == name:
+                return level
+    return None
+
+
+def projects_using(skill: str) -> list[dict]:
+    """Projects whose technology list shows this skill in use."""
+    names = SKILL_ALIASES.get(skill, [skill])
+    return [project for project in PROJECTS if any(tech in names for tech in project["tech"])]
+
+
+def learning_skills() -> list[str]:
+    return [name for group in SKILLS for name, level in group["items"] if level == "Learning"]

@@ -1,0 +1,88 @@
+{# Reusable pieces shared by several pages. #}
+{% from "_icons.html" import icon %}
+
+{# Inner-page title block. #}
+{% macro page_header(title, lead=None) -%}
+<section class="page-header">
+  <div class="container">
+    <h1>{{ title }}</h1>
+    {% if lead %}<p class="page-lead">{{ lead }}</p>{% endif %}
+  </div>
+</section>
+{%- endmacro %}
+
+{# A list of technology names. #}
+{% macro tags(items, label="Technologies used") -%}
+<ul class="tags" aria-label="{{ label }}">
+  {% for item in items %}<li>{{ item }}</li>{% endfor %}
+</ul>
+{%- endmacro %}
+
+{# Picture area of a project: a screenshot when there is one, otherwise a designed cover. #}
+{% macro project_cover(project) -%}
+{% if project.image %}
+<img class="project-image" src="{{ static_url(project.image) }}" alt="{{ project.image_alt }}" width="1200" height="493" loading="lazy" decoding="async">
+{% elif project.slug == "portfolio-website" %}
+<div class="project-cover cover-flow" aria-hidden="true">
+  <p class="cover-label">Contact message flow</p>
+  <ol>
+    <li>Validate the form on the server</li>
+    <li>Store it with parameterized SQL</li>
+    <li>Review it in a private dashboard</li>
+  </ol>
+  <p class="cover-foot">Flask and SQLite</p>
+</div>
+{% else %}
+<div class="project-cover cover-text" aria-hidden="true">
+  <p class="cover-label">{{ project.kind }}</p>
+  <p class="cover-title">{{ project.name }}</p>
+  <p class="cover-foot">{{ project.tech | join(", ") }}</p>
+</div>
+{% endif %}
+{%- endmacro %}
+
+{# One project card. compact=True is the short version used on the home page. #}
+{% macro project_card(project, compact=False, wide=False) -%}
+<article class="project-card{% if wide %} project-card-wide{% endif %}">
+  <a class="project-media" href="{{ url_for('public.project_detail', slug=project.slug) }}" tabindex="-1" aria-hidden="true">
+    {{ project_cover(project) }}
+  </a>
+  <div class="project-body">
+    <p class="project-kind">{{ project.kind }}</p>
+    <h3><a href="{{ url_for('public.project_detail', slug=project.slug) }}">{{ project.name }}</a></h3>
+    <p class="project-summary">{{ project.summary }}</p>
+    {% if not compact and project.contribution %}
+    <p class="project-role"><strong>My role:</strong> {{ project.contribution }}</p>
+    {% endif %}
+    {{ tags(project.tech) }}
+    <div class="project-actions">
+      <a class="btn btn-primary btn-sm" href="{{ url_for('public.project_detail', slug=project.slug) }}">View details<span class="sr-only"> of {{ project.name }}</span></a>
+      {% if not compact %}
+      {% if project.repo %}<a class="btn btn-secondary btn-sm" href="{{ project.repo }}" target="_blank" rel="noopener noreferrer">{{ icon("github", 16) }} GitHub<span class="sr-only"> repository of {{ project.name }}</span></a>{% endif %}
+      {% if project.demo %}<a class="btn btn-secondary btn-sm" href="{{ project.demo }}" target="_blank" rel="noopener noreferrer">Live demo{{ icon("external", 14) }}<span class="sr-only"> of {{ project.name }}</span></a>{% endif %}
+      {% endif %}
+    </div>
+  </div>
+</article>
+{%- endmacro %}
+
+{# Skill level label. #}
+{% macro level_pill(level) -%}
+<span class="level level-{{ level | lower }}">{{ c.SKILL_LEVELS[level] }}</span>
+{%- endmacro %}
+
+{# Closing call to action, shared by several pages. #}
+{% macro closing_cta(heading, text) -%}
+<section class="section section-tint cta">
+  <div class="container cta-inner">
+    <div>
+      <h2>{{ heading }}</h2>
+      <p>{{ text }}</p>
+    </div>
+    <div class="button-row">
+      <a class="btn btn-primary" href="{{ url_for('public.contact') }}">Contact me</a>
+      <a class="btn btn-secondary" href="{{ url_for('public.resume_download') }}">{{ icon("download") }} Download resume</a>
+    </div>
+  </div>
+</section>
+{%- endmacro %}

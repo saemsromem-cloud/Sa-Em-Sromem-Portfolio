@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% from "_components.html" import page_header, closing_cta with context %}
+{% block title %}About | {{ p.name }}{% endblock %}
+{% block description %}About {{ p.name }}, a Web Programming student at Passerelles numériques Cambodia (PNC) learning backend development with Python and Flask.{% endblock %}
+
+{% block content %}
+{{ page_header("About me", c.ABOUT[0]) }}
+
+<section class="section">
+  <div class="container about-layout">
+    <div class="prose">
+      <h2>Why backend development</h2>
+      {% for paragraph in c.ABOUT[1:] %}<p>{{ paragraph }}</p>{% endfor %}
+    </div>
+    <aside class="glance" aria-labelledby="glance-title">
+      <img class="glance-photo" src="{{ static_url('images/profile.jpg') }}" width="320" height="320" alt="Portrait of {{ p.name }}" loading="lazy" decoding="async">
+      <h2 id="glance-title">At a glance</h2>
+      <dl>
+        <div><dt>Based in</dt><dd>{{ p.location }}</dd></div>
+        <div><dt>Studying</dt><dd>{{ c.EDUCATION.program }}, {{ c.EDUCATION.short_school }}</dd></div>
+        <div><dt>Graduation</dt><dd>Expected {{ c.EDUCATION.expected_graduation }}</dd></div>
+        <div><dt>Looking for</dt><dd>{{ p.target }}</dd></div>
+        <div><dt>Languages</dt><dd>{% for language, level in c.LANGUAGES %}{{ language }} ({{ level | lower }}){% if not loop.last %}, {% endif %}{% endfor %}</dd></div>
+      </dl>
+    </aside>
+  </div>
+</section>
+
+<section class="section section-tint">
+  <div class="container split">
+    <h2>Education</h2>
+    <div class="prose">
+      <h3>{{ c.EDUCATION.school }}</h3>
+      <p class="meta-line">{{ c.EDUCATION.program }}, {{ c.EDUCATION.level | lower }}. {{ c.EDUCATION.years }}.</p>
+      <p><strong>Topics studied:</strong> {{ c.EDUCATION.topics }}</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-heading"><h2>My learning journey in web programming</h2></div>
+    <div class="learning-grid">
+      <div>
+        <h3 class="subsection-title">Steps so far</h3>
+        <ol class="timeline">
+          {% for title, detail in c.LEARNING.timeline %}
+          <li><strong>{{ title }}</strong><span>{{ detail }}</span></li>
+          {% endfor %}
+        </ol>
+      </div>
+      <div>
+        <h3 class="subsection-title">What I am learning now</h3>
+        <ul class="plain-list">
+          {% for title, detail in c.LEARNING.now %}
+          <li><strong>{{ title }}</strong><span>{{ detail }}</span></li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-tint">
+  <div class="container">
+    <div class="section-heading"><h2>How I learn and solve problems</h2></div>
+    <div class="principles">
+      {% for title, text in c.APPROACH %}
+      <div class="principle">
+        <h3>{{ title }}</h3>
+        <p>{{ text }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container split">
+    <h2>Career goal</h2>
+    <div class="prose">
+      <p class="statement">{{ c.GOAL }}</p>
+    </div>
+  </div>
+</section>
+
+{{ closing_cta("Want to know more?", "Read my resume or send me a message. I am happy to answer questions about my projects.") }}
+{% endblock %}

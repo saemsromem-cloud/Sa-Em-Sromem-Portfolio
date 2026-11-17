@@ -37,3 +37,33 @@ def init_db() -> None:
     db = get_db()
     db.execute(SCHEMA)
     db.commit()
+
+
+# ---------------------------------------------------------------- Messages
+
+
+def save_message(form: dict) -> None:
+    db = get_db()
+    db.execute(
+        "INSERT INTO messages (name, email, subject, message) VALUES (?, ?, ?, ?)",
+        (form["name"], form["email"], form["subject"], form["message"]),
+    )
+    db.commit()
+
+
+def message_exists(form: dict) -> bool:
+    """True if the same person already sent this exact message (a double submit)."""
+    row = get_db().execute(
+        "SELECT 1 FROM messages WHERE email = ? AND subject = ? AND message = ? LIMIT 1",
+        (form["email"], form["subject"], form["message"]),
+    ).fetchone()
+    return row is not None
+
+
+def recent_message_count(minutes: int) -> int:
+    """How many messages arrived in the last few minutes (all senders)."""
+    row = get_db().execute(
+        "SELECT COUNT(*) FROM messages WHERE created_at >= datetime('now', ?)",
+        (f"-{int(minutes)} minutes",),
+    ).fetchone()
+    return row[0]

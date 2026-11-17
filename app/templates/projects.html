@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% from "_components.html" import page_header, project_card, closing_cta with context %}
+{% block title %}Projects | {{ p.name }}{% endblock %}
+{% block description %}Projects by {{ p.name }}: a Flask portfolio with a database and admin dashboard, plus websites built with HTML, CSS and JavaScript.{% endblock %}
+
+{% block content %}
+{{ page_header("Projects", "The portfolio backend is my most relevant work so far. The other projects show my frontend foundation and what I learned by building them, alone and in teams.") }}
+
+<section class="section">
+  <div class="container">
+    <div class="project-grid">
+      {% for project in c.PROJECTS %}
+      {{ project_card(project, wide=loop.first) }}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{{ closing_cta("Want to see more?", "My other work and source code are on GitHub, and I am happy to talk about any of these projects.") }}
+{% endblock %}

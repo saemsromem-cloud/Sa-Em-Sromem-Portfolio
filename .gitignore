@@ -16,3 +16,4 @@ instance/
 Thumbs.db
 .vscode/
 .idea/
+set_admin.py

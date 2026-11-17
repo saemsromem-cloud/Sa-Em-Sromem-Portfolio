@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% from "_components.html" import project_card, closing_cta with context %}
+
+{% block head_extra %}
+<script type="application/ld+json">
+  {{ {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": p.name,
+    "jobTitle": p.title,
+    "url": site_url ~ "/",
+    "image": site_url ~ static_url("images/profile.jpg"),
+    "sameAs": [p.github, p.linkedin],
+    "alumniOf": {"@type": "CollegeOrUniversity", "name": c.EDUCATION.school},
+    "address": {"@type": "PostalAddress", "addressLocality": "Phnom Penh", "addressCountry": "KH"}
+  } | tojson }}
+</script>
+{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <h1>{{ p.name }}</h1>
+      <p class="hero-title">{{ p.title }}</p>
+      <p class="hero-intro">{{ p.intro }}</p>
+      <div class="button-row">
+        <a class="btn btn-light" href="{{ url_for('public.projects') }}">View my projects</a>
+        <a class="btn btn-outline-light" href="{{ url_for('public.resume_download') }}">{{ icon("download") }} Download resume</a>
+        <a class="btn btn-link-light" href="{{ url_for('public.contact') }}">Contact me</a>
+      </div>
+    </div>
+    <figure class="hero-portrait">
+      <img src="{{ static_url('images/profile.jpg') }}" width="320" height="320" alt="Portrait of {{ p.name }}" fetchpriority="high">
+      <figcaption>{{ c.EDUCATION.program }} student at {{ c.EDUCATION.short_school }}</figcaption>
+    </figure>
+  </div>
+  <div class="container">
+    <dl class="status-strip">
+      <div><dt>Looking for</dt><dd>{{ p.target }}</dd></div>
+      <div><dt>Studying</dt><dd>{{ c.EDUCATION.program }} at {{ c.EDUCATION.school }}, expected graduation {{ c.EDUCATION.expected_graduation }}</dd></div>
+      <div><dt>Learning now</dt><dd>{{ c.LEARNING.now[0][0] }} and {{ c.LEARNING.now[1][0] }}</dd></div>
+    </dl>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-heading">
+      <h2>Core skills</h2>
+      <a class="section-link" href="{{ url_for('public.skills') }}">See all skills</a>
+    </div>
+    <div class="skill-summary">
+      {% for group in c.SKILLS %}
+      <div class="skill-summary-group">
+        <h3>{{ group.group }}</h3>
+        <ul class="chips">
+          {% for name, level in group["items"] if name in featured_skills or level == "Learning" %}
+          <li class="chip{% if level == 'Learning' %} chip-learning{% endif %}">{{ name }}{% if level == "Learning" %} <span class="chip-note">(learning)</span>{% endif %}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section section-tint">
+  <div class="container">
+    <div class="section-heading">
+      <h2>Selected projects</h2>
+      <a class="section-link" href="{{ url_for('public.projects') }}">View all projects</a>
+    </div>
+    <div class="project-grid project-grid-3">
+      {% for project in featured_projects %}
+      {{ project_card(project, compact=True) }}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container split">
+    <h2>About me</h2>
+    <div class="prose">
+      {% for paragraph in c.ABOUT[:2] %}<p>{{ paragraph }}</p>{% endfor %}
+      <p><a class="section-link" href="{{ url_for('public.about') }}">Read more about me</a></p>
+    </div>
+  </div>
+</section>
+
+{{ closing_cta("Open to an internship in 2027", "If you are looking for a Backend Developer intern, I would be glad to talk.") }}
+{% endblock %}

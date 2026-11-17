@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% from "_components.html" import page_header, level_pill, closing_cta with context %}
+{% block title %}Skills | {{ p.name }}{% endblock %}
+{% block description %}Technical skills of {{ p.name }}: Python, Flask, SQL, MySQL, HTML, CSS, JavaScript, Git and more, with an honest note on what I use and what I am still learning.{% endblock %}
+
+{% block content %}
+{{ page_header("Skills", "A practical foundation built through coursework and projects. I have marked what I use today and what I am still learning, so you can see where I am.") }}
+
+<section class="section">
+  <div class="container">
+    <dl class="legend" aria-label="What the skill labels mean">
+      {% for level in c.SKILL_LEVELS %}
+      <div><dt>{{ level_pill(level) }}</dt><dd>{{ c.SKILL_LEVEL_HELP[level] }}</dd></div>
+      {% endfor %}
+    </dl>
+
+    <div class="skill-groups">
+      {% for group in c.SKILLS %}
+      <section class="skill-group" aria-labelledby="group-{{ loop.index }}">
+        <h2 id="group-{{ loop.index }}">{{ group.group }}</h2>
+        <ul class="skill-list">
+          {% for name, level in group["items"] if level != "Learning" %}
+          {% set used_in = c.projects_using(name) %}
+          <li>
+            <div class="skill-row"><span class="skill-name">{{ name }}</span>{{ level_pill(level) }}</div>
+            {% if used_in %}
+            <p class="skill-used">Used in {% for project in used_in %}<a href="{{ url_for('public.project_detail', slug=project.slug) }}">{{ project.name }}</a>{% if not loop.last %}, {% endif %}{% endfor %}</p>
+            {% endif %}
+          </li>
+          {% endfor %}
+        </ul>
+        {% set learning = group["items"] | selectattr(1, "equalto", "Learning") | list %}
+        {% if learning %}
+        <div class="skill-learning">
+          <h3>Currently learning</h3>
+          <ul class="skill-list">
+            {% for name, level in learning %}
+            <li><div class="skill-row"><span class="skill-name">{{ name }}</span>{{ level_pill(level) }}</div></li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+      </section>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section section-tint">
+  <div class="container">
+    <div class="section-heading"><h2>What I am learning now</h2></div>
+    <ul class="learning-list">
+      {% for title, detail in c.LEARNING.now %}
+      <li><strong>{{ title }}</strong><span>{{ detail }}</span></li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+
+{{ closing_cta("See the skills in use", "Each project page lists the technologies I used and what I built with them.") }}
+{% endblock %}

@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 {% block title %}{{ code }} | {{ p.name }}{% endblock %}
 {% block robots %}<meta name="robots" content="noindex">{% endblock %}
-{% block body %}
-<main id="main" class="container error-page">
+{% block content %}
+<div class="container error-page">
   <h1>{{ code }}</h1>
   <p>{{ message }}</p>
-  <a class="btn btn-primary" href="{{ url_for('public.index') }}">Back to the portfolio</a>
-</main>
+  <a class="btn btn-primary" href="{{ url_for('public.index') }}">Back to the home page</a>
+</div>
 {% endblock %}
