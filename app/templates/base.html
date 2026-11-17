@@ -1,0 +1,41 @@
+{% from "_icons.html" import icon %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ p.name }} | {{ p.title }}{% endblock %}</title>
+  <meta name="description" content="{% block description %}{{ p.name }} is a first-year Web Programming student at PNC in Cambodia, building Python and Flask projects and looking for a Backend Developer internship in 2027.{% endblock %}">
+  <meta name="author" content="{{ p.name }}">
+  <meta name="theme-color" content="#101b2a">
+  {% block robots %}<meta name="robots" content="index, follow">
+  <link rel="canonical" href="{{ site_url }}{{ request.path }}">{% endblock %}
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="{{ p.name }}">
+  <meta property="og:title" content="{{ p.name }} | {{ p.title }}">
+  <meta property="og:description" content="Python and Flask projects, SQL databases and a Backend Developer internship goal for 2027.">
+  <meta property="og:url" content="{{ site_url }}/">
+  <meta property="og:image" content="{{ site_url }}{{ url_for('static', filename='images/og-image.png') }}">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/site.css') }}">
+  {# Set the theme before first paint so the page does not flash the wrong colors. #}
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem("theme");
+        var dark = saved ? saved === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+        document.documentElement.dataset.theme = dark ? "dark" : "light";
+      } catch (e) { document.documentElement.dataset.theme = "light"; }
+    })();
+  </script>
+  {% block head_extra %}{% endblock %}
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  {% block body %}{% endblock %}
+  <script src="{{ url_for('static', filename='js/site.js') }}" defer></script>
+</body>
+</html>

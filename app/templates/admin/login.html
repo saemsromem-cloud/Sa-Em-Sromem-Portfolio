@@ -1,0 +1,17 @@
+{% extends "admin/base.html" %}
+{% block title %}Admin login{% endblock %}
+{% block body %}
+<main class="login-wrap">
+  <form class="login-form contact-form" method="post" action="{{ url_for('admin.login') }}">
+    <h1>Admin login</h1>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, text in messages %}<p class="notice notice-{{ category }}" role="alert">{{ text }}</p>{% endfor %}
+    {% endwith %}
+    <label>Username <input type="text" name="username" autocomplete="username" required autofocus></label>
+    <label>Password <input type="password" name="password" autocomplete="current-password" required></label>
+    <button class="btn btn-primary" type="submit">Log in</button>
+    <p class="muted"><a href="{{ url_for('public.index') }}">Back to the portfolio</a></p>
+  </form>
+</main>
+{% endblock %}

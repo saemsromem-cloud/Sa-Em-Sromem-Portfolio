@@ -1,0 +1,74 @@
+{% extends "admin/base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block body %}
+<header class="admin-bar">
+  <div class="container admin-bar-inner">
+    <strong>Messages</strong>
+    <div class="admin-bar-actions">
+      <a href="{{ url_for('public.index') }}">View site</a>
+      <form method="post" action="{{ url_for('admin.logout') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="btn btn-secondary" type="submit">Log out</button>
+      </form>
+    </div>
+  </div>
+</header>
+
+<main class="container admin-main">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, text in messages %}<p class="notice notice-{{ category }}" role="status">{{ text }}</p>{% endfor %}
+  {% endwith %}
+
+  <dl class="stats">
+    <div><dt>Total</dt><dd>{{ total_messages }}</dd></div>
+    <div><dt>Unread</dt><dd>{{ unread_messages }}</dd></div>
+    <div><dt>Read</dt><dd>{{ read_messages }}</dd></div>
+  </dl>
+
+  {% if messages %}
+  <label class="search">Search messages <input type="search" id="message-search" placeholder="Name, email, subject or text"></label>
+  <div class="table-wrap">
+    <table id="message-table">
+      <thead><tr><th>From</th><th>Subject</th><th>Received</th><th>Status</th><th><span class="sr-only">Actions</span></th></tr></thead>
+      <tbody>
+        {% for m in messages %}
+        <tr class="{{ 'is-unread' if m.status == 'Unread' else '' }}">
+          <td><strong>{{ m.name }}</strong><br><a href="mailto:{{ m.email }}">{{ m.email }}</a></td>
+          <td>{{ m.subject }}<span class="sr-only"> {{ m.message }}</span></td>
+          <td>{{ m.created_at }}</td>
+          <td>{{ m.status }}</td>
+          <td class="row-actions">
+            <button type="button" class="btn btn-secondary view-message"
+              data-subject="{{ m.subject }}" data-name="{{ m.name }}" data-email="{{ m.email }}"
+              data-date="{{ m.created_at }}" data-message="{{ m.message }}">Open</button>
+            {% if m.status == "Unread" %}
+            <form method="post" action="{{ url_for('admin.mark_as_read', message_id=m.id) }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button class="btn btn-secondary" type="submit">Mark read</button>
+            </form>
+            {% endif %}
+            <form method="post" action="{{ url_for('admin.delete_message', message_id=m.id) }}" class="confirm-delete">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button class="btn btn-danger" type="submit">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <p id="no-results" class="muted" hidden>No messages match your search.</p>
+  </div>
+  {% else %}
+  <p class="muted">No messages yet. Messages sent through the contact form appear here.</p>
+  {% endif %}
+</main>
+
+<dialog id="message-dialog" aria-labelledby="dialog-subject">
+  <h2 id="dialog-subject"></h2>
+  <p class="muted" id="dialog-meta"></p>
+  <p id="dialog-message" class="dialog-message"></p>
+  <form method="dialog"><button class="btn btn-secondary">Close</button></form>
+</dialog>
+
+<script src="{{ url_for('static', filename='js/admin.js') }}" defer></script>
+{% endblock %}
