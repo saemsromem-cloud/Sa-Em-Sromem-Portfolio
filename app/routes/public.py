@@ -1,7 +1,11 @@
 """Public pages: home, about, projects, skills, resume and contact."""
 
+import json
+import os
 import sqlite3
 import time
+import urllib.error
+import urllib.request
 
 from flask import (
     Blueprint, abort, current_app, flash, redirect, render_template,
@@ -15,6 +19,33 @@ bp = Blueprint("public", __name__)
 
 RESUME_FILE = "resume/Sa-Em-Sromem-Resume.pdf"
 RESUME_DOWNLOAD_NAME = "Sa-Em-Sromem-Resume.pdf"
+
+
+def _send_telegram_notification(form: dict) -> None:
+    """Send contact form submission to Telegram using built-in urllib."""
+    token = os.getenv("TELEGRAM_BOT_TOKEN")
+    chat_id = os.getenv("TELEGRAM_CHAT_ID")
+    if not token or not chat_id:
+        return
+
+    text = (
+        "📩 New Portfolio Contact Message!\n\n"
+        f"👤 Name: {form.get('name', 'N/A')}\n"
+        f"📧 Email: {form.get('email', 'N/A')}\n"
+        f"📝 Subject: {form.get('subject', 'No subject')}\n\n"
+        f"💬 Message:\n{form.get('message', '')}"
+    )
+
+    url = f"https://api.telegram.org/bot{token}/sendMessage"
+    payload = json.dumps({"chat_id": chat_id, "text": text}).encode("utf-8")
+    req = urllib.request.Request(
+        url, data=payload, headers={"Content-Type": "application/json"}, method="POST"
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            resp.read()
+    except (urllib.error.URLError, TimeoutError):
+        current_app.logger.exception("Failed to send Telegram notification")
 
 
 @bp.get("/")
@@ -63,12 +94,14 @@ def resume():
 @bp.get("/resume.pdf")
 def resume_pdf():
     """The PDF opened in the browser."""
+    assert current_app.static_folder is not None
     return send_from_directory(current_app.static_folder, RESUME_FILE, mimetype="application/pdf")
 
 
 @bp.get("/resume/download")
 def resume_download():
     """The same PDF, saved to disk."""
+    assert current_app.static_folder is not None
     return send_from_directory(
         current_app.static_folder, RESUME_FILE,
         mimetype="application/pdf", as_attachment=True, download_name=RESUME_DOWNLOAD_NAME,
@@ -112,6 +145,7 @@ def contact():
             return _render_contact(form, [error], status=429)
         if not db.message_exists(form):  # a double click should not store the message twice
             db.save_message(form)
+            _send_telegram_notification(form)
     except sqlite3.Error:
         current_app.logger.exception("Could not save contact message")
         flash("Your message could not be saved. Please email me directly instead.", "error")
